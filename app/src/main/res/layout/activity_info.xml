@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".InfoActivity"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <comulez.github.droplibrary.DropViewPager
+        android:id="@+id/mViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_above="@+id/circleIndicator"
+        android:layout_alignParentTop="true">
+    </comulez.github.droplibrary.DropViewPager>
+
+    <comulez.github.droplibrary.DropIndicator
+        android:background="@color/colorPrimary"
+        android:id="@+id/circleIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        app:circle_color="@android:color/darker_gray"
+        app:click_color="#fafafa"
+        app:color1="#FCC04D"
+        app:color2="#00C3E2"
+        app:color3="#FE626D"
+        app:duration="800"
+        app:radius="14dp"
+        app:scale="0.5">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/msg"
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/notice"
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/video"
+            />
+
+    </comulez.github.droplibrary.DropIndicator>
+
+
+
+</RelativeLayout>

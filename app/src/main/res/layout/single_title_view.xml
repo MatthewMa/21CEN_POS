@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/single_item_title"
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:paddingStart="15dp"
+            android:paddingEnd="5dp"
+            android:paddingBottom="7dp"
+            android:paddingTop="8dp"
+            android:textSize="18sp"
+            android:textColor="@android:color/darker_gray"
+            android:text="Sample Title"
+            android:background="#EFEFEF"
+            android:maxLines="2"
+            />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/line_color"/>
+
+        <TextView
+
+            android:id="@+id/single_item_content"
+            android:layout_width="0dp"
+            android:textColor="@android:color/black"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="2"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:paddingBottom="7dp"
+            android:paddingTop="8dp"
+            android:textSize="18sp"
+            android:text="Sample Content"/>
+
+        <TextView
+
+            android:visibility="gone"
+            android:id="@+id/single_item_danwei"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:paddingBottom="7dp"
+            android:paddingTop="8dp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/line_color"/>
+</LinearLayout>
