@@ -37,11 +37,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/notice"
+            android:id="@+id/iv_tax"
             />
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/video"
+            android:id="@+id/iv_promotion"
             />
 
     </comulez.github.droplibrary.DropIndicator>

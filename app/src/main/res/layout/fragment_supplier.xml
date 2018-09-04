@@ -3,7 +3,8 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context=".BasicInfoFragment">
+             tools:context=".SupplierFragment">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -14,16 +15,17 @@
             android:orientation="vertical"
             >
             <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Basic Information"
-            android:gravity="center_horizontal"
-            android:textSize="22sp"
-            android:textColor="@android:color/black"
-            android:textStyle="bold|italic"
-            android:layout_margin="5dp"
-            android:id="@+id/basic_info_textview"
-            />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Supplier Information"
+                android:gravity="center_horizontal"
+                android:textSize="22sp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold|italic"
+                android:layout_margin="5dp"
+                android:id="@+id/basic_info_textview"
+                />
         </LinearLayout>
     </ScrollView>
+
 </FrameLayout>

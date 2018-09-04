@@ -13,6 +13,12 @@ import android.widget.LinearLayout;
 
 import com.matthew.customviews.SingleTitleView;
 import com.matthew.model.Product;
+import com.matthew.tools.DialogTools;
+import com.matthew.tools.GsonUtil;
+import com.matthew.tools.HttpCallbackListener;
+import com.matthew.tools.HttpUtil;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 
 /**
@@ -49,6 +55,11 @@ public class BasicInfoFragment extends Fragment {
         // Inflate the layout for this fragment
         View basicInfoView = inflater.inflate(R.layout.fragment_basic_info, container, false);
         ll = (LinearLayout) basicInfoView.findViewById(R.id.ll);
+        updateLinearLayout();
+        return basicInfoView;
+    }
+
+    private void updateLinearLayout() {
         // Add table view
         // Bar Code
         addSingleTitleView("Bar Code", currentProduct.getCODE(),"");
@@ -58,19 +69,28 @@ public class BasicInfoFragment extends Fragment {
         addSingleTitleView("English Name", currentProduct.getTEXTTIP(),"");
         // Inventory
         addSingleTitleView("Inventory", currentProduct.getAMOUNT()+"","");
-        // Sold
-        addSingleTitleView("Sold",currentProduct.getSOLD()+"","");
-        // Total In
-        addSingleTitleView("Total In", currentProduct.getTOTALAMOUNT()+"","");
-        // Buy price
-        addSingleTitleView("Buy Price", currentProduct.getPRICEBUY()+"","");
-        // Sell price
-        addSingleTitleView("Sell Price", currentProduct.getPRICESELL()+"","");
+        // Sold (only visible to admin)
+        if(Constants.role.equals("super")) {
+            addSingleTitleView("Sold", currentProduct.getSOLD() + "", "");
+        }
+        // Total In (only visible to admin)
+        if(Constants.role.equals("super")){
+            addSingleTitleView("Total In", currentProduct.getTOTALAMOUNT()+"","");
+        }
+        // Buy price (only visible to admin)
+        if(Constants.role.equals("super")){
+            addSingleTitleView("Buy Price", currentProduct.getPRICEBUY()+"","");
+        }
+        // Sell price (only visible to admin)
+        if(Constants.role.equals("super")) {
+            addSingleTitleView("Sell Price", currentProduct.getPRICESELL() + "", "");
+        }
         // Expire date
         addSingleTitleView("Expire Date", currentProduct.getEXPIRY(),"");
         // Supplier
-        addSingleTitleView("Supplier Name", currentSupplierName,"");
-        return basicInfoView;
+        if(Constants.role.equals("super")) {
+            addSingleTitleView("Supplier Name", currentSupplierName, "");
+        }
     }
 
     private void addSingleTitleView(String title, String content, String unit) {
@@ -129,5 +149,43 @@ public class BasicInfoFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(currentProduct!=null) {
+            String barCode = currentProduct.getCODE();
+            String barCodeUrl = Constants.PRODUCT_URL + barCode;
+            HttpUtil.getInstance().get(barCodeUrl, new HttpCallbackListener() {
+                @Override
+                public void onFinish(String response) {
+                    currentProduct = GsonUtil.GsonToBean(response, Product.class);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Reload inventory and expire date
+                            ll.removeAllViews();
+                            updateLinearLayout();
+                        }
+                    });
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    super.onError(e);
+                    // Show error dialog in UIThread
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            DialogTools.showSweetDialog(getActivity(), SweetAlertDialog
+                                            .ERROR_TYPE,
+                                    "Update Error", "Server is busy, please try again later!");
+                            return;
+                        }
+                    });
+                }
+            });
+        }
     }
 }

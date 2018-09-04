@@ -8,16 +8,21 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.matthew.model.Product;
+import com.matthew.model.Supplier;
+import com.matthew.tools.DialogTools;
 
 import java.util.ArrayList;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import comulez.github.droplibrary.DropIndicator;
 import comulez.github.droplibrary.DropViewPager;
 
-public class InfoActivity extends AppCompatActivity implements TaxInfoFragment
-        .OnFragmentInteractionListener, BasicInfoFragment.OnFragmentInteractionListener, PromotionInfoFragment.OnFragmentInteractionListener {
+public class InfoActivity extends AppCompatActivity implements SupplierFragment
+        .OnFragmentInteractionListener, BasicInfoFragment.OnFragmentInteractionListener, UpdateInfoFragment.OnFragmentInteractionListener {
 
     private DropViewPager mViewPager;
     private DropIndicator circleIndicator;
@@ -25,6 +30,10 @@ public class InfoActivity extends AppCompatActivity implements TaxInfoFragment
     private ArrayList<Fragment> mTabContents = new ArrayList<>();
     private Product currentProduct;
     private String currentSupplierName;
+    private Supplier currentSupplier;
+    private ImageView iv_tax;
+    private ImageView iv_promotion;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,10 +41,19 @@ public class InfoActivity extends AppCompatActivity implements TaxInfoFragment
         setContentView(R.layout.activity_info);
         mViewPager = (DropViewPager) findViewById(R.id.mViewPager);
         circleIndicator = (DropIndicator) findViewById(R.id.circleIndicator);
+        iv_tax = (ImageView) findViewById(R.id.iv_tax);
+        iv_promotion = (ImageView) findViewById(R.id.iv_promotion);
         // Get intent data
         currentProduct = (Product) getIntent().getExtras().getSerializable(MainActivity
                 .PRODUCT_NAME);
+        currentSupplier = (Supplier) getIntent().getExtras().getSerializable(MainActivity.SUPPLIER);
         currentSupplierName = getIntent().getStringExtra(MainActivity.SUPPLIER_NAME);
+        if(currentSupplierName.isEmpty()) {
+            DialogTools.showSweetDialog(InfoActivity.this, SweetAlertDialog
+                            .WARNING_TYPE,
+                    "Empty Supplier",
+                    "Supplier is empty!");
+        }
         // Add back button
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null){
@@ -43,9 +61,8 @@ public class InfoActivity extends AppCompatActivity implements TaxInfoFragment
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         mTabContents.add(BasicInfoFragment.newInstance(currentProduct, currentSupplierName));
-        mTabContents.add(TaxInfoFragment.newInstance());
-        mTabContents.add(PromotionInfoFragment.newInstance());
-
+        mTabContents.add(SupplierFragment.newInstance(currentSupplier));
+        mTabContents.add(UpdateInfoFragment.newInstance(currentProduct));
         mAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
             public int getCount() {

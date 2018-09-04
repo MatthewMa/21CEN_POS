@@ -14,6 +14,7 @@ import android.widget.EditText;
 
 import com.matthew.model.Product;
 import com.matthew.model.Supplier;
+import com.matthew.tools.DialogTools;
 import com.matthew.tools.GsonUtil;
 import com.matthew.tools.HttpCallbackListener;
 import com.matthew.tools.HttpUtil;
@@ -22,7 +23,6 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 
 
 public class MainActivity extends AppCompatActivity {
-
     private Button scannerButton;
     private Button submitButton;
     private EditText barCodeEditText;
@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private String supplierName = "";
     public static final String PRODUCT_NAME = "PRODUCT_NAME";
     public static final String SUPPLIER_NAME = "SUPPLIER_NAME";
+    public static final String SUPPLIER = "SUPPLIER";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,59 +54,85 @@ public class MainActivity extends AppCompatActivity {
                 String barCodeText = barCodeEditText.getText().toString().trim().toLowerCase();
                 if(barCodeText.isEmpty()) {
                     // Show error dialog
-                    showSweetDialog(SweetAlertDialog.ERROR_TYPE, "Empty Bar Code", "Bar code cannot be empty!");
+                    DialogTools.showSweetDialog(MainActivity.this, SweetAlertDialog.ERROR_TYPE,
+                            "Empty" +
+                            " Bar Code", "Bar " +
+                            "code" +
+                            " cannot be empty!");
                     return;
                 }
                 // Show progress bar
-                final SweetAlertDialog pDialog = new SweetAlertDialog(MainActivity.this, SweetAlertDialog
-                        .PROGRESS_TYPE);
-                pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-                pDialog.setTitleText("Loading");
-                pDialog.setCancelable(false);
-                pDialog.show();
+                final SweetAlertDialog pDialog = DialogTools.showProgressAlertDialog(MainActivity
+                        .this);
 
                 String barCodeUrl = Constants.PRODUCT_URL + barCodeText;
                 HttpUtil.getInstance().get(barCodeUrl, new HttpCallbackListener() {
                     @Override
                     public void onFinish(String response) {
+                        if(response.contains("no row found")) {
+                            // Show error dialog in UIThread
+                            MainActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    DialogTools.showSweetDialog(MainActivity
+                                                    .this, SweetAlertDialog
+                                                    .ERROR_TYPE,
+                                            "No Product", "Product is empty, please check " +
+                                                    "bar code!");
+                                    pDialog.dismiss();
+                                }
+                            });
+                            return;
+                        }
                         final Product product = GsonUtil.GsonToBean(response, Product.class);
                         String supplierId = product.getSUPPLIER();
                         if(supplierId.isEmpty()) {
-                            showSweetDialog(SweetAlertDialog.WARNING_TYPE, "Empty Supplier",
-                                    "Supplier is empty!");
-                        }
-                        String supplierUrl = Constants.SUPPLIER_URL + supplierId;
-                        HttpUtil.getInstance().get(supplierUrl, new HttpCallbackListener() {
-                            @Override
-                            public void onFinish(String response) {
-                                Supplier supplier = GsonUtil.GsonToBean(response, Supplier
-                                        .class);
-                                if(supplier != null) {
-                                    supplierName = supplier.getSUPPLIERNAME();
-                                }
-                                Intent infoIntent = new Intent(MainActivity.this,InfoActivity
-                                        .class);
-                                Bundle infoBundle =new Bundle();
-                                infoBundle.putSerializable(PRODUCT_NAME, product);
-                                infoIntent.putExtras(infoBundle);
-                                infoIntent.putExtra(SUPPLIER_NAME, supplierName);
-                                startActivity(infoIntent);
-                                pDialog.dismiss();
-                            }
-
-                            @Override
-                            public void onError(Exception e) {
-                                super.onError(e);
-                                // Show error dialog in UIThread
-                                MainActivity.this.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        showSweetDialog(SweetAlertDialog.ERROR_TYPE, "Network error", "Network error, please try again later!");
-                                        pDialog.dismiss();
+                            Intent infoIntent = new Intent(MainActivity.this, InfoActivity
+                                    .class);
+                            Bundle infoBundle = new Bundle();
+                            infoBundle.putSerializable(PRODUCT_NAME, product);
+                            infoIntent.putExtras(infoBundle);
+                            infoIntent.putExtra(SUPPLIER_NAME, "");
+                            startActivity(infoIntent);
+                            pDialog.dismiss();
+                        } else {
+                            String supplierUrl = Constants.SUPPLIER_URL + supplierId;
+                            HttpUtil.getInstance().get(supplierUrl, new HttpCallbackListener() {
+                                @Override
+                                public void onFinish(String response) {
+                                    Supplier supplier = GsonUtil.GsonToBean(response, Supplier
+                                            .class);
+                                    if (supplier != null) {
+                                        supplierName = supplier.getSUPPLIERNAME();
                                     }
-                                });
-                            }
-                        });
+                                    Intent infoIntent = new Intent(MainActivity.this, InfoActivity
+                                            .class);
+                                    Bundle infoBundle = new Bundle();
+                                    infoBundle.putSerializable(PRODUCT_NAME, product);
+                                    infoBundle.putSerializable(SUPPLIER, supplier);
+                                    infoIntent.putExtras(infoBundle);
+                                    infoIntent.putExtra(SUPPLIER_NAME, supplierName);
+                                    startActivity(infoIntent);
+                                    pDialog.dismiss();
+                                }
+
+                                @Override
+                                public void onError(Exception e) {
+                                    super.onError(e);
+                                    // Show error dialog in UIThread
+                                    MainActivity.this.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            DialogTools.showSweetDialog(MainActivity
+                                                            .this, SweetAlertDialog
+                                                            .ERROR_TYPE,
+                                                    "Network error", "Network error, please try again later!");
+                                            pDialog.dismiss();
+                                        }
+                                    });
+                                }
+                            });
+                        }
                     }
 
                     @Override
@@ -115,7 +142,10 @@ public class MainActivity extends AppCompatActivity {
                         MainActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                showSweetDialog(SweetAlertDialog.ERROR_TYPE, "Network error", "Network error, please try again later!");
+                                DialogTools.showSweetDialog(MainActivity.this, SweetAlertDialog
+                                                .ERROR_TYPE,
+                                        "Network error",
+                                        "Network error, please try again later!");
                                 pDialog.dismiss();
                             }
                         });
@@ -125,19 +155,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    /**
-     *
-     * @param successType
-     * @param textInfo
-     * @param contentInfo
-     */
-    private void showSweetDialog(int successType, String textInfo, String contentInfo) {
-        new SweetAlertDialog(MainActivity.this, successType)
-                .setTitleText(textInfo)
-                .setContentText(contentInfo)
-                .show();
     }
 
     @Override
@@ -157,6 +174,20 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if(id == R.id.action_logout) {
+            new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                    .setTitleText("Log out")
+                    .setContentText("Are you sure to log out?")
+                    .setCancelText("Cancel")
+                    .setConfirmText("Confirm")
+                    .showCancelButton(true)
+                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                        @Override
+                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                            finish();
+                        }
+                    })
+                    .show();
         }
 
         return super.onOptionsItemSelected(item);

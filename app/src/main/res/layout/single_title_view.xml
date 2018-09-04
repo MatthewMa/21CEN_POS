@@ -21,7 +21,6 @@
             android:paddingTop="8dp"
             android:textSize="18sp"
             android:textColor="@android:color/darker_gray"
-            android:text="Sample Title"
             android:background="#EFEFEF"
             android:maxLines="2"
             />
@@ -43,8 +42,7 @@
             android:paddingEnd="5dp"
             android:paddingBottom="7dp"
             android:paddingTop="8dp"
-            android:textSize="18sp"
-            android:text="Sample Content"/>
+            android:textSize="18sp"/>
 
         <TextView
 

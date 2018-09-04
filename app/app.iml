@@ -121,6 +121,7 @@
     <orderEntry type="library" name="Gradle: com.nineoldandroids:library:2.4.0@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.github.ulez:dropindicator-0.0.2" level="project" />
     <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.8.5@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.rengwuxian.materialedittext:library-2.1.4" level="project" />
     <orderEntry type="library" name="Gradle: com.squareup.okhttp:okhttp:2.7.5@jar" level="project" />
     <orderEntry type="library" name="Gradle: __local_aars__:G.\Android\Projects\21CEN\app\libs\zbar.jar:unspecified@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-annotations:24.2.1@jar" level="project" />

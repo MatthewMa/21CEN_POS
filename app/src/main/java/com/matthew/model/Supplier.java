@@ -1,6 +1,8 @@
 package com.matthew.model;
 
-public class Supplier {
+import java.io.Serializable;
+
+public class Supplier implements Serializable {
 
     /**
      * ID : 710ee5cb-8734-40fd-91c6-b37b87858ac9
